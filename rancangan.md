@@ -66,3 +66,5 @@ Untuk mencoba aplikasi ini langsung di handphone Anda:
    * Jalankan perintah untuk memulai program.
    * Scan kode QR yang muncul di layar komputer menggunakan kamera handphone (atau melalui aplikasi Expo Go).
    * Aplikasi akan langsung terbuka di handphone Anda.
+
+   saddas
