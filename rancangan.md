@@ -1,70 +1,108 @@
-# 🚗 DriveEase - Aplikasi Manajemen Rental Mobil (Internal)
+# 🚗 DriveEase - Aplikasi Manajemen Rental Mobil & Motor
 
-DriveEase adalah aplikasi manajemen rental mobil lintas platform (Android & iOS) untuk skala bisnis kecil. Aplikasi ini digunakan secara internal oleh **Admin** dan **Owner** untuk mencatat transaksi dan mengelola armada secara praktis dari handphone, tanpa perlu sistem pendaftaran mandiri oleh pelanggan.
+DriveEase adalah aplikasi manajemen rental mobil dan motor berbasis **Web Application** yang dideploy langsung ke **Firebase Hosting** (`websiterental.web.app`). Aplikasi ini dirancang dengan pendekatan **Mobile-First** (dioptimalkan sepenuhnya untuk kenyamanan layar handphone/tablet, namun tetap responsif dan rapi saat dibuka di browser komputer/laptop).
 
 ---
 
-## 👥 Siapa Saja Penggunanya?
+## 👥 Siapa Saja Penggunanya & Bagaimana Tampilannya?
 
-### 1. Admin (Pengelola Operasional)
-* **Pencatatan Sewa:** Menginput data penyewa (nama, nomor HP, foto KTP) secara manual saat ada yang datang menyewa.
-* **Kelola Pengembalian:** Mencatat waktu pengembalian mobil dan menghitung denda keterlambatan jika ada.
-* **Kelola Mobil:** Menambah unit mobil baru, memperbarui tarif sewa harian, atau mengubah status ketersediaan mobil.
+### 1. 🌐 Tampilan Customer (Public Web/App)
+Halaman ini bersifat publik sehingga calon penyewa bisa melihat armada yang tersedia tanpa perlu masuk (login) ke sistem.
+* **Dua Halaman Utama:**
+  * **Halaman Mobil:** Menampilkan daftar katalog mobil lengkap dengan foto, spesifikasi singkat, dan harga sewa harian.
+  * **Halaman Motor:** Menampilkan daftar katalog motor lengkap dengan foto, kapasitas mesin (cc), dan harga sewa harian.
+* **Fitur Cek Ketersediaan Real-Time:**
+  * Customer dapat memasukkan **Tanggal Mulai** dan **Tanggal Selesai** sewa.
+  * Sistem akan langsung menyaring dan menampilkan kendaraan mana saja yang **Ready (Tersedia)** untuk disewa pada rentang tanggal tersebut beserta total harganya.
+  * **Filter & Urutan (Sort):** Customer dapat menyaring unit berdasarkan tipe transmisi (Manual/Matic), kapasitas penumpang, atau mengurutkan berdasarkan harga terendah ke tertinggi.
+* **Layanan Tambahan (Add-ons) Mobil:**
+  * Saat memilih mobil, customer dapat mencentang opsi layanan tambahan: **BBM** (Rp 100.000/hari) dan **Sopir** (Rp 100.000/hari).
+  * Sistem di web secara dinamis akan langsung menjumlahkan biaya add-on tersebut ke total estimasi harga sewa sebelum diarahkan ke WhatsApp.
+* **Tombol Hubungi WhatsApp Dinamis (Call-to-Action):**
+  * **Jika unit tersedia:** Tombol berwarna hijau terang bertuliskan `🟢 Pesan Sekarang via WhatsApp` dengan pesan otomatis terformat rapi berisi detail sewa termasuk rincian add-on yang dipilih.
+  * **Jika unit tidak tersedia:** Tombol berwarna kuning bertuliskan `🟡 Tanya Ketersediaan Unit Lain` agar customer tetap bisa menghubungi Admin, memberi ruang bagi Admin untuk menawarkan unit Rent-to-Rent (mitra).
 
-### 2. Owner (Pemilik Bisnis)
-* **Pantau Bisnis:** Melihat total pemasukan dan transaksi rental yang sedang berjalan atau sudah selesai.
-* **Cek Armada:** Memantau mobil mana saja yang sedang disewa atau siap jalan secara real-time.
+### 2. 🔐 Tampilan Admin & Owner (Internal Dashboard)
+Digunakan oleh tim operasional untuk mengelola bisnis sehari-hari dengan antarmuka yang efisien.
+* **Fitur CRUD Kendaraan (Mobil & Motor):**
+  * Admin dapat menambah, membaca, mengedit, dan menghapus (Create, Read, Update, Delete) data armada mobil maupun motor (foto, plat nomor, nama unit, tipe, harga sewa, status keaktifan).
+  * **Media Upload Praktis:** Dilengkapi fitur unggah foto kendaraan menggunakan metode *drag-and-drop* atau mengambil foto langsung lewat kamera handphone.
+* **Manajemen Booking & Validasi Anti-Bentrok:**
+  * Admin dapat mencatat transaksi penyewaan dengan memasukkan nama pelanggan, nomor HP, unit kendaraan yang dipilih, serta rentang tanggal sewa.
+  * **Pencegahan Double Booking:** Jika Admin lain atau sistem mendeteksi kendaraan tersebut sudah dibooking pada tanggal yang sama, sistem akan memblokir transaksi baru tersebut dan memunculkan peringatan bahwa unit sudah terpakai.
+* **Fitur Kemudahan Operasional Admin:**
+  * **Tombol Cepat Hubungi Penyewa:** Sediakan tombol pintasan WhatsApp di samping daftar booking aktif untuk langsung mengirim pesan konfirmasi atau penagihan ke nomor WhatsApp penyewa tanpa perlu menyalin nomor secara manual.
+  * **Cetak Bukti Sewa (Invoice/Nota PDF):** Fitur sekali klik untuk mencetak kuitansi pembayaran atau bukti sewa digital (PDF) guna dikirimkan ke WhatsApp customer.
+* **Kalender Okupansi (Papan Pantau Jadwal):**
+  * Kalender interaktif untuk melihat status booking seluruh armada per hari/bulan secara visual.
+  * Memudahkan Admin melihat tanggal-tanggal mana saja yang padat (peak season) atau melihat unit mana saja yang sedang menganggur.
+* **📊 Halaman Kesimpulan Transaksi (Dashboard Analitik):**
+  * Halaman khusus (terutama untuk Owner) yang menyajikan metrik performa bisnis dalam periode tertentu (Mingguan/Bulanan/Kustom):
+    * **Metrik Operasional:** 
+      * Total unit armada (Mobil & Motor).
+      * Jumlah booking berjalan dan booking baru dalam minggu ini.
+      * Jumlah pelanggan unik yang aktif melakukan transaksi.
+    * **Metrik Keuangan:**
+      * **Uang Masuk (Gross Revenue):** Total seluruh pendapatan dari sewa unit sendiri dan sewa unit R2R ke customer.
+      * **Uang Keluar (Expenses):** Total biaya operasional (perbaikan unit, servis) dan modal bayar sewa ke rental mitra (R2R).
+      * **Keuntungan Bersih (Net Profit):** Total keuntungan bersih setelah dikurangi uang keluar dan modal unit R2R.
+      * **Total Piutang:** Nominal uang sewa yang statusnya belum lunas/baru bayar DP (Down Payment).
+    * **Analisis Armada & R2R:**
+      * **Rasio Okupansi (Occupancy Rate):** Persentase keaktifan armada (seberapa sering unit berjalan dibanding hanya parkir di garasi).
+      * **Armada Terfavorit:** Grafik unit mobil dan motor yang paling sering disewa.
+      * **Rasio R2R:** Jumlah unit mitra yang dipakai minggu ini (untuk menilai kapan waktu yang tepat menambah unit sendiri jika pasar sedang tinggi).
+    * **Ekspor Laporan:** Tombol untuk mengunduh riwayat transaksi bulanan ke file Excel (CSV) untuk keperluan administrasi dan pencatatan kas internal.
+
+---
+
+## 🛡️ Sistem Proteksi & Pemisahan Akses
+
+Untuk membedakan hak akses antara halaman Customer (umum) dan Admin (operasional), aplikasi menggunakan mekanisme berikut:
+
+1. **Pemisahan URL/Rute (Routing Guard):**
+   * **Rute Publik:** `/` (Home), `/mobil`, dan `/motor` dapat diakses langsung oleh siapapun.
+   * **Rute Privat:** `/admin/*` (Dashboard, Kelola Armada, Kalender) diproteksi oleh kode aplikasi (*Router Guard*). Jika ada pengguna yang belum login mencoba mengakses halaman ini, sistem akan otomatis mengalihkan mereka ke halaman `/login`.
+2. **Firebase Authentication:**
+   * Login ke halaman Admin menggunakan email dan password yang terdaftar secara aman di database Firebase Auth.
+3. **Aturan Keamanan Database (Firestore Security Rules):**
+   * **Pengguna Umum (Customer):** Hanya diizinkan untuk membaca data (`read` only) katalog mobil dan motor yang aktif. Tidak diizinkan menambah atau mengubah data apa pun.
+   * **Pengguna Terautentikasi (Admin):** Memiliki izin penuh untuk membuat, membaca, mengedit, dan menghapus data (`read`, `create`, `update`, `delete`) di semua tabel database (Armada, Booking, Laporan Keuangan, Blacklist).
+
+---
+
+## 🔄 Konsep Khusus: Tidak Ada "Full Book" (Rent-to-Rent / Sub-Rental)
+
+Mengikuti strategi bisnis di mana *"tidak ada kata penuh bagi pelanggan"*, sistem didesain mendukung fitur **Rent-to-Rent (R2R)**:
+* **Penanda Unit Luar (Sub-Rental):** 
+  * Jika seluruh unit internal habis pada tanggal yang dipilih customer, Admin tetap bisa menginput booking baru dengan menandai transaksi tersebut sebagai **"Unit R2R / Rental Mitra"**.
+  * Admin dapat mencatat nama rental mitra penyedia unit dan **Harga Modal Sewa** dari mitra tersebut.
+* **Perhitungan Keuntungan Bersih (Net Profit):**
+  * Sistem laporan keuangan otomatis menghitung keuntungan dari unit mitra: 
+    `Keuntungan = Harga Jual ke Customer - Harga Modal Mitra`.
+* **Visualisasi Kalender:**
+  * Di kalender admin, booking untuk unit luar akan diberi label khusus (misal warna kuning/oranye dengan tag **"R2R"**) agar operasional lapangan tahu bahwa kunci/mobil harus diambil dari rental sebelah, bukan dari garasi sendiri.
 
 ---
 
 ## 🌐 Database & Penyimpanan Online (Firebase)
 
 Aplikasi ini terhubung langsung dengan **Google Firebase** untuk penyimpanan data secara cloud/online:
-* **Sinkronisasi Instan (Real-time):** Ketika Admin mencatat sewa mobil baru di HP-nya, Owner bisa langsung melihat pembaruan data tersebut di HP pribadinya secara instan tanpa perlu memuat ulang (*refresh*) aplikasi.
-* **Dukungan Mode Offline (Bekerja Tanpa Internet):** Jika Admin mencatat transaksi di daerah yang susah sinyal, data sewa akan tersimpan sementara di memori HP terlebih dahulu. Begitu HP terhubung kembali dengan internet, aplikasi otomatis mengirimkan (*push*) data tersebut ke Firebase tanpa perlu diinput ulang.
-* **Keamanan Data:** Informasi penyewa dan riwayat pembayaran disimpan dengan aman di database cloud Firestore.
-* **Penyimpanan Berkas:** Foto KTP penyewa disimpan dalam penyimpanan awan (Cloud Storage) milik Firebase yang aman dan dapat diakses kapan saja oleh Admin/Owner.
+* **Firebase Hosting:** Untuk menghosting aplikasi web agar dapat diakses publik melalui domain aman `websiterental.web.app` (menggunakan CDN berkecepatan tinggi dan SSL/HTTPS otomatis).
+* **Firestore Database (Real-time):** Ketika Admin mencatat sewa kendaraan baru, dashboard admin lainnya dan status ketersediaan di sisi customer akan langsung diperbarui secara instan.
+* **Penyimpanan Berkas (Cloud Storage):** Foto kendaraan dan dokumen KTP penyewa disimpan dalam penyimpanan awan milik Firebase.
 
 ---
 
-## ✨ Fitur Utama
+## 🛠️ Pengembangan & Deployment ke Firebase
 
-* **📅 Kalender Okupansi & Ketersediaan Mobil (Sistem Seperti Hotel):**
-  * Halaman **"Papan Pantau Jadwal"** berformat kalender/grid.
-  * Menampilkan baris daftar mobil dan kolom tanggal sepanjang bulan berjalan.
-  * **Status Warna:**
-    * 🟢 **Hijau (Ready):** Mobil siap disewa pada tanggal tersebut.
-    * 🔴 **Merah (Booked):** Mobil sudah terpakai (ketika diklik, akan memunculkan detail penyewa).
-  * Admin dapat dengan mudah melihat tanggal tertentu (misalnya tanggal 15) untuk mencari unit mana yang masih kosong atau siapa yang sedang memakainya.
+Setelah kode aplikasi selesai ditulis, berikut cara menjalankan dan mendeploy aplikasi ke internet:
 
-* **Pencatatan Sewa Instan & Layanan Tambahan (Add-ons):**
-  * Admin bisa langsung memasukkan pesanan pelanggan secara manual.
-  * Admin dapat menambahkan opsi layanan tambahan dengan mudah (misalnya centang pilihan **"Dengan Sopir"**, **"Antar-Jemput Bandara"**, atau **"BBM/Bensin"**) dan sistem akan otomatis mengakumulasikan biayanya ke dalam total tagihan.
+1. **Menjalankan di Komputer Lokal (Development):**
+   * Jalankan perintah start lokal (misal: `npm run dev`).
+   * Buka browser di komputer atau HP Anda menggunakan alamat IP lokal yang disediakan (misal: `http://localhost:5173` atau `http://192.168.1.x:5173`).
 
-* **Anti Bentrok Jadwal:** Sistem mendeteksi otomatis ketersediaan mobil sehingga Admin tidak bisa menginput sewa ganda untuk mobil yang sama di tanggal yang sama.
-
-* **⛔ Peringatan Daftar Hitam (Blacklist System):**
-  * Admin atau Owner dapat menandai nomor KTP/HP penyewa yang bermasalah (misalnya membawa lari unit, merusak mobil, atau pembayaran macet) agar masuk ke daftar hitam.
-  * Saat Admin mencoba menginput penyewaan baru dengan nomor KTP/HP yang terdaftar di daftar hitam, aplikasi akan memunculkan peringatan merah penolakan secara instan.
-
-* **Kalkulator Denda Otomatis:** Sistem otomatis menghitung denda keterlambatan saat Admin memproses pengembalian mobil.
-
-* **Ringkasan Pendapatan Sederhana:** Grafik atau catatan pemasukan bulanan untuk membantu Owner memantau perkembangan bisnis.
-
----
-
-## 🛠️ Cara Menjalankan Aplikasi di HP
-
-Untuk mencoba aplikasi ini langsung di handphone Anda:
-
-1. **Persiapan:**
-   * Pastikan Anda sudah menginstal aplikasi **Expo Go** (bisa diunduh gratis di Google Play Store atau Apple App Store).
-   * Pastikan komputer dan handphone Anda terhubung ke jaringan internet yang sama.
-
-2. **Jalankan Aplikasi:**
-   * Buka folder proyek di komputer Anda.
-   * Jalankan perintah untuk memulai program.
-   * Scan kode QR yang muncul di layar komputer menggunakan kamera handphone (atau melalui aplikasi Expo Go).
-   * Aplikasi akan langsung terbuka di handphone Anda.
-
-   saddas
+2. **Mendeploy ke Firebase Hosting (Production):**
+   * Buat file produksi (build) aplikasi dengan perintah compile.
+   * Lakukan deployment menggunakan perintah CLI Firebase:
+     `firebase deploy --only hosting`
+   * Aplikasi akan langsung ter-update di internet dan siap diakses di domain `websiterental.web.app`.
