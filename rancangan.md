@@ -117,6 +117,31 @@ Berdasarkan keputusan desain, sistem dibangun dengan arsitektur berikut:
   }
   ```
 
+### 🎨 Prinsip Desain Kerapatan Layout (Compact Layout)
+Untuk menghindari pemborosan ruang (*excessive whitespace*) dan membuat visualisasi data lebih efektif:
+1. **Grid Katalog Kendaraan**:
+   * Ukuran minimum kolom kartu diatur rapat (antara `180px` hingga `220px`).
+   * Mengutamakan tampilan multi-kolom (misalnya 2 kolom di layar HP, dan 4-5 kolom di layar desktop) agar customer tidak perlu melakukan banyak *scrolling*.
+2. **Ketinggian & Skala Komponen**:
+   * Gambar kendaraan dibuat lebih ringkas (tinggi maks. `120px` - `145px` di HP).
+   * Jarak padding dan margin dikurangi secara proporsional di layar HP (maks. `12px` - `16px`).
+3. **Kontrol Variabel CSS**:
+   * Menggunakan CSS Variables global untuk mengatur lebar kartu dan unit spasi, sehingga kerapatan layout dapat diatur secara seragam dari satu baris kode.
+
+### 🎨 Estetika Desain Premium (Menghindari Kesan "AI-Generated")
+Untuk memastikan aplikasi tidak terlihat seperti template standar buatan generator AI dasar, kami menerapkan panduan visual berikut:
+1. **Pemusnahan Emoji sebagai Ikon Utama**:
+   * Emojis (`🚗`, `🛵`, `🧼`, `🧼`) digantikan dengan **custom SVG Vector Icons** yang tajam, minimalis, dan profesional.
+2. **Skema Warna Kustom & Gradasi Halus**:
+   * Menghindari warna bawaan Tailwind/standar (seperti murni merah/biru/hijau).
+   * Menggunakan palet gelap premium: background berbasis *Midnight Blue/Deep Slate* (`#0a0f1d`), kartu semi-transparan dengan border tipis (*glassmorphism*), serta warna aksen yang dikurasi (seperti *Emerald Teal* untuk tombol sukses, dan *Vibrant Indigo* untuk tombol utama).
+3. **Efek Interaktif & Micro-Animations**:
+   * Kartu kendaraan harus memiliki transisi halus (`transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1)`).
+   * Ketika kartu di-hover oleh kursor, ia akan sedikit terangkat (*elevated*) dan memancarkan efek cahaya border (*border-glow*).
+4. **Desain Komponen Form & Modal yang Elegan**:
+   * Input teks tidak menggunakan border default browser. Menggunakan border gelap halus yang menyala terang saat diklik (*focus state*).
+   * Modal menggunakan efek latar belakang buram (*backdrop-filter: blur(8px)*) agar menyatu secara estetis dengan halaman di belakangnya.
+
 ---
 
 ## 🚀 Pengembangan & Deployment ke Firebase
