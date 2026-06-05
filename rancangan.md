@@ -93,16 +93,43 @@ Aplikasi ini terhubung langsung dengan **Google Firebase** untuk penyimpanan dat
 
 ---
 
-## 🛠️ Pengembangan & Deployment ke Firebase
+## 🛠️ Tech Stack & Pengembangan
 
-Setelah kode aplikasi selesai ditulis, berikut cara menjalankan dan mendeploy aplikasi ke internet:
+Berdasarkan keputusan desain, sistem dibangun dengan arsitektur berikut:
+
+1. **Frontend Framework**: **React.js** dengan bundler **Vite**.
+2. **Styling**: **Vanilla CSS** modern (menggunakan CSS Variables, Flexbox/Grid, dan transisi halus).
+3. **Backend/Database**: **Firebase** (Firestore Database, Firebase Auth, Cloud Storage).
+
+### 🛡️ Aturan Keamanan Database (Firestore Security Rules)
+* **Katalog Kendaraan (`/vehicles`)**: Dapat dibaca oleh publik tanpa autentikasi, namun hanya bisa dimodifikasi oleh admin.
+  ```javascript
+  match /vehicles/{vehicleId} {
+    allow read: if true;
+    allow write: if request.auth != null;
+  }
+  ```
+* **Data Transaksi & Booking (`/bookings`)**: Hanya boleh dibaca dan ditulis oleh admin yang terautentikasi.
+  ```javascript
+  match /bookings/{bookingId} {
+    allow read, write: if request.auth != null;
+  }
+  ```
+
+---
+
+## 🚀 Pengembangan & Deployment ke Firebase
+
+Setelah kode aplikasi siap, berikut cara menjalankan dan mendeploy aplikasi ke internet:
 
 1. **Menjalankan di Komputer Lokal (Development):**
-   * Jalankan perintah start lokal (misal: `npm run dev`).
-   * Buka browser di komputer atau HP Anda menggunakan alamat IP lokal yang disediakan (misal: `http://localhost:5173` atau `http://192.168.1.x:5173`).
+   * Pastikan Node.js terinstal.
+   * Jalankan `npm install` untuk memasang dependensi.
+   * Jalankan server lokal: `npm run dev`
+   * Buka browser di alamat lokal yang disediakan (misal: `http://localhost:5173`).
 
 2. **Mendeploy ke Firebase Hosting (Production):**
-   * Buat file produksi (build) aplikasi dengan perintah compile.
-   * Lakukan deployment menggunakan perintah CLI Firebase:
+   * Lakukan build produksi: `npm run build`
+   * Lakukan deployment menggunakan Firebase CLI:
      `firebase deploy --only hosting`
-   * Aplikasi akan langsung ter-update di internet dan siap diakses di domain `websiterental.web.app`.
+   * Aplikasi akan langsung ter-update di internet pada domain `websiterental.web.app`.
