@@ -560,6 +560,95 @@
 
         .event-own { background-color: rgba(59, 130, 246, 0.2); color: var(--accent-blue); }
         .event-r2r { background-color: rgba(245, 158, 11, 0.2); color: var(--accent-yellow); }
+
+        /* Modal Booking Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(4px);
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 1.5rem;
+            width: 100%;
+            max-width: 480px;
+            position: relative;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+            animation: modalFadeIn 0.3s ease;
+        }
+
+        @keyframes modalFadeIn {
+            from { transform: translateY(10px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1.25rem;
+            font-size: 1.5rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .close-btn:hover {
+            color: var(--text-main);
+        }
+
+        /* Styling Halaman Layanan Lain */
+        .layanan-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+
+        .layanan-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .layanan-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .layanan-icon {
+            font-size: 2.5rem;
+        }
+
+        .layanan-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+
+        .layanan-price {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--accent-green);
+        }
     </style>
 </head>
 <body>
@@ -575,23 +664,11 @@
     <main>
         <!-- TAMPILAN CUSTOMER -->
         <div id="customer-page" class="page-content active">
-            <!-- Navigasi Sub-Halaman Customer (Mobil vs Motor) -->
+            <!-- Navigasi Sub-Halaman Customer (Mobil vs Motor vs Layanan) -->
             <div class="customer-subnav">
                 <button id="subnav-mobil-btn" class="subnav-btn active" onclick="switchCustomerPage('mobil')">🚗 Mobil</button>
                 <button id="subnav-motor-btn" class="subnav-btn" onclick="switchCustomerPage('motor')">🛵 Motor</button>
-            </div>
-
-            <!-- Form Pencarian Tanggal (Mobile-first layout) -->
-            <div class="search-bar">
-                <div class="form-group">
-                    <label>Tanggal Mulai</label>
-                    <input type="date" id="start-date" value="2026-06-05" onchange="updateEstimates()">
-                </div>
-                <div class="form-group">
-                    <label>Tanggal Selesai</label>
-                    <input type="date" id="end-date" value="2026-06-07" onchange="updateEstimates()">
-                </div>
-                <button class="search-btn" onclick="alert('Menyaring ketersediaan unit untuk tanggal terpilih...')">Cari Tanggal</button>
+                <button id="subnav-layanan-btn" class="subnav-btn" onclick="switchCustomerPage('layanan')">✨ Layanan Lain</button>
             </div>
 
             <!-- HALAMAN MOBIL -->
@@ -607,30 +684,14 @@
                                 <span>⚙️ Manual</span>
                                 <span>⛽ Bensin</span>
                             </div>
-                            
-                            <!-- Add-on section -->
-                            <div class="addon-section">
-                                <div class="addon-title">Layanan Tambahan (Add-on):</div>
-                                <div class="addon-options">
-                                    <label class="addon-item">
-                                        <input type="checkbox" class="addon-cb" data-price="100000" onchange="calculateTotal(this, 350000, 'total-avanza', 'wa-avanza', 'Toyota Avanza')">
-                                        Sopir (+Rp 100rb/hari)
-                                    </label>
-                                    <label class="addon-item">
-                                        <input type="checkbox" class="addon-cb" data-price="100000" onchange="calculateTotal(this, 350000, 'total-avanza', 'wa-avanza', 'Toyota Avanza')">
-                                        BBM (+Rp 100rb/hari)
-                                    </label>
-                                </div>
-                            </div>
-
                             <div class="vehicle-price">
                                 <div>
-                                    <div style="font-size: 0.7rem; color: var(--text-muted);">Total Estimasi (2 Hari)</div>
-                                    <div class="price-val" id="total-avanza">Rp 700.000</div>
+                                    <div style="font-size: 0.7rem; color: var(--text-muted);">Harga Sewa</div>
+                                    <div class="price-val">Rp 350.000<span style="font-size: 0.75rem; font-weight: normal; color: var(--text-muted);">/hari</span></div>
                                 </div>
-                                <a id="wa-avanza" href="https://wa.me/6285100000000?text=Halo%20DriveEase%2C%20saya%20ingin%20memesan%20Toyota%20Avanza%20untuk%20tanggal%205-7%20Juni" target="_blank" class="wa-btn">
+                                <button class="wa-btn" onclick="openBookingModal('Toyota Avanza', 350000, true, false)">
                                     🟢 Pesan
-                                </a>
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -645,29 +706,14 @@
                                 <span>⚙️ Matic</span>
                                 <span>⛽ Bensin</span>
                             </div>
-                            
-                            <div class="addon-section">
-                                <div class="addon-title">Layanan Tambahan (Add-on):</div>
-                                <div class="addon-options">
-                                    <label class="addon-item">
-                                        <input type="checkbox" class="addon-cb" data-price="100000" onchange="calculateTotal(this, 450000, 'total-xpander', 'wa-xpander', 'Mitsubishi Xpander')">
-                                        Sopir (+Rp 100rb/hari)
-                                    </label>
-                                    <label class="addon-item">
-                                        <input type="checkbox" class="addon-cb" data-price="100000" onchange="calculateTotal(this, 450000, 'total-xpander', 'wa-xpander', 'Mitsubishi Xpander')">
-                                        BBM (+Rp 100rb/hari)
-                                    </label>
-                                </div>
-                            </div>
-
                             <div class="vehicle-price">
                                 <div>
-                                    <div style="font-size: 0.7rem; color: var(--text-muted);">Total Estimasi (2 Hari)</div>
-                                    <div class="price-val" id="total-xpander">Rp 900.000</div>
+                                    <div style="font-size: 0.7rem; color: var(--text-muted);">Harga Sewa</div>
+                                    <div class="price-val">Rp 450.000<span style="font-size: 0.75rem; font-weight: normal; color: var(--text-muted);">/hari</span></div>
                                 </div>
-                                <a id="wa-xpander" href="https://wa.me/6285100000000?text=Halo%20DriveEase%2C%20apakah%20Mitsubishi%20Xpander%20atau%20unit%20sejenisnya%20ready%20untuk%20tanggal%205-7%20Juni%3F" target="_blank" class="wa-btn alternate">
+                                <button class="wa-btn alternate" onclick="openBookingModal('Mitsubishi Xpander', 450000, true, true)">
                                     🟡 Tanya CS
-                                </a>
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -689,14 +735,51 @@
                             </div>
                             <div class="vehicle-price">
                                 <div>
-                                    <div style="font-size: 0.7rem; color: var(--text-muted);">Total Estimasi (2 Hari)</div>
-                                    <div class="price-val" id="total-beat">Rp 160.000</div>
+                                    <div style="font-size: 0.7rem; color: var(--text-muted);">Harga Sewa</div>
+                                    <div class="price-val">Rp 80.000<span style="font-size: 0.75rem; font-weight: normal; color: var(--text-muted);">/hari</span></div>
                                 </div>
-                                <a id="wa-beat" href="https://wa.me/6285100000000?text=Halo%20DriveEase%2C%20saya%20ingin%20memesan%20Honda%20Beat%20untuk%20tanggal%205-7%20Juni" target="_blank" class="wa-btn">
+                                <button class="wa-btn" onclick="openBookingModal('Honda Beat 110cc', 80000, false, false)">
                                     🟢 Pesan
-                                </a>
+                                </button>
                             </div>
                         </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- HALAMAN LAYANAN LAIN -->
+            <div id="customer-layanan-view" class="customer-view-page">
+                <div class="layanan-container">
+                    <div class="layanan-card">
+                        <div class="layanan-header">
+                            <span class="layanan-icon">🧼</span>
+                            <div>
+                                <h4 class="layanan-title">Jasa Cuci Mobil Premium</h4>
+                                <span class="layanan-price">Mulai Rp 50.000</span>
+                            </div>
+                        </div>
+                        <p style="color: var(--text-muted); font-size: 0.85rem; line-height: 1.4;">
+                            Cuci bersih luar dan dalam (vacuum), menggunakan sabun wax khusus agar bodi mobil mengkilap dan terlindungi dari goresan. Bisa booking slot atau langsung datang ke garasi kami.
+                        </p>
+                        <a href="https://wa.me/6285100000000?text=Halo%20DriveEase%2C%20saya%20tertarik%20dengan%20layanan%20Cuci%20Mobil" target="_blank" class="wa-btn" style="width: fit-content; padding: 0.4rem 0.8rem; font-size: 0.8rem;">
+                            🟢 Tanya Jadwal Cuci
+                        </a>
+                    </div>
+
+                    <div class="layanan-card">
+                        <div class="layanan-header">
+                            <span class="layanan-icon">🅿️</span>
+                            <div>
+                                <h4 class="layanan-title">Jasa Titip / Inap Mobil Aman</h4>
+                                <span class="layanan-price">Rp 30.000 / malam</span>
+                            </div>
+                        </div>
+                        <p style="color: var(--text-muted); font-size: 0.85rem; line-height: 1.4;">
+                            Bepergian ke luar kota dengan tenang. Titipkan kendaraan Anda di garasi tertutup kami yang dilengkapi dengan penjagaan CCTV 24 Jam dan gate system. Aman dari panas dan hujan.
+                        </p>
+                        <a href="https://wa.me/6285100000000?text=Halo%20DriveEase%2C%20saya%20ingin%20tanya%20tentang%20layanan%20Inap%20Mobil" target="_blank" class="wa-btn" style="width: fit-content; padding: 0.4rem 0.8rem; font-size: 0.8rem;">
+                            🟢 Pesan Slot Inap
+                        </a>
                     </div>
                 </div>
             </div>
@@ -853,6 +936,49 @@
         </div>
     </main>
 
+    <!-- MODAL BOOKING -->
+    <div id="booking-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal()">&times;</span>
+            <h3 id="modal-vehicle-title" style="margin-bottom: 1.25rem; color: var(--text-main);">Booking Kendaraan</h3>
+            
+            <div style="display: flex; gap: 0.75rem; margin-bottom: 1rem;">
+                <div class="form-group" style="flex: 1;">
+                    <label>Tanggal Mulai</label>
+                    <input type="date" id="modal-start-date" onchange="calculateModalTotal()">
+                </div>
+                <div class="form-group" style="flex: 1;">
+                    <label>Tanggal Selesai</label>
+                    <input type="date" id="modal-end-date" onchange="calculateModalTotal()">
+                </div>
+            </div>
+
+            <div id="modal-addon-section" class="addon-section" style="margin-bottom: 1.25rem; display: none;">
+                <div class="addon-title">Layanan Tambahan (Add-on):</div>
+                <div class="addon-options">
+                    <label class="addon-item">
+                        <input type="checkbox" id="modal-cb-sopir" data-price="100000" onchange="calculateModalTotal()">
+                        Sopir (+Rp 100rb/hari)
+                    </label>
+                    <label class="addon-item">
+                        <input type="checkbox" id="modal-cb-bbm" data-price="100000" onchange="calculateModalTotal()">
+                        BBM (+Rp 100rb/hari)
+                    </label>
+                </div>
+            </div>
+
+            <div style="border-top: 1px solid var(--border-color); padding-top: 1.25rem; display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <div id="modal-duration-label" style="font-size: 0.7rem; color: var(--text-muted);">Total Estimasi (1 Hari)</div>
+                    <div id="modal-total-price" class="price-val">Rp 0</div>
+                </div>
+                <a id="modal-wa-btn" href="#" target="_blank" class="wa-btn">
+                    🟢 Pesan via WA
+                </a>
+            </div>
+        </div>
+    </div>
+
     <script>
         function switchTab(tabId) {
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
@@ -874,9 +1000,12 @@
             if (type === 'mobil') {
                 document.getElementById('subnav-mobil-btn').classList.add('active');
                 document.getElementById('customer-mobil-view').classList.add('active');
-            } else {
+            } else if (type === 'motor') {
                 document.getElementById('subnav-motor-btn').classList.add('active');
                 document.getElementById('customer-motor-view').classList.add('active');
+            } else {
+                document.getElementById('subnav-layanan-btn').classList.add('active');
+                document.getElementById('customer-layanan-view').classList.add('active');
             }
         }
 
@@ -896,10 +1025,20 @@
             }
         }
 
-        // Fungsi Hitung Total Harga Sewa & Update Text WhatsApp
-        function getDurationDays() {
-            const start = new Date(document.getElementById('start-date').value);
-            const end = new Date(document.getElementById('end-date').value);
+        // Global state untuk pemesanan aktif di modal
+        let activeBooking = {
+            name: '',
+            basePrice: 0,
+            hasAddons: false,
+            isR2R: false
+        };
+
+        function getDurationDays(startId, endId) {
+            const startVal = document.getElementById(startId).value;
+            const endVal = document.getElementById(endId).value;
+            if (!startVal || !endVal) return 1;
+            const start = new Date(startVal);
+            const end = new Date(endVal);
             const diffTime = Math.abs(end - start);
             const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
             return diffDays > 0 ? diffDays : 1;
@@ -909,61 +1048,87 @@
             return 'Rp ' + num.toLocaleString('id-ID');
         }
 
-        function calculateTotal(checkbox, basePricePerDay, totalSpanId, waLinkId, vehicleName) {
-            const days = getDurationDays();
-            const card = checkbox.closest('.vehicle-info');
-            const checkboxes = card.querySelectorAll('.addon-cb');
+        function openBookingModal(name, basePrice, hasAddons, isR2R) {
+            activeBooking = { name, basePrice, hasAddons, isR2R };
+            document.getElementById('modal-vehicle-title').textContent = `Booking ${name}`;
             
-            let addonPricePerDay = 0;
+            const today = new Date();
+            const tomorrow = new Date();
+            tomorrow.setDate(today.getDate() + 1);
+            
+            const formatDate = (date) => date.toISOString().split('T')[0];
+            document.getElementById('modal-start-date').value = formatDate(today);
+            document.getElementById('modal-end-date').value = formatDate(tomorrow);
+            
+            document.getElementById('modal-start-date').min = formatDate(today);
+            document.getElementById('modal-end-date').min = formatDate(today);
+            
+            document.getElementById('modal-cb-sopir').checked = false;
+            document.getElementById('modal-cb-bbm').checked = false;
+
+            if (hasAddons) {
+                document.getElementById('modal-addon-section').style.display = 'block';
+            } else {
+                document.getElementById('modal-addon-section').style.display = 'none';
+            }
+
+            calculateModalTotal();
+            document.getElementById('booking-modal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('booking-modal').classList.remove('active');
+        }
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('booking-modal');
+            if (event.target == modal) {
+                closeModal();
+            }
+        }
+
+        function calculateModalTotal() {
+            const days = getDurationDays('modal-start-date', 'modal-end-date');
+            let addonPrice = 0;
             let selectedAddons = [];
 
-            checkboxes.forEach(cb => {
-                if (cb.checked) {
-                    addonPricePerDay += parseInt(cb.getAttribute('data-price'));
-                    selectedAddons.push(cb.parentNode.textContent.trim().split(' ')[0]); // Sopir atau BBM
+            if (activeBooking.hasAddons) {
+                if (document.getElementById('modal-cb-sopir').checked) {
+                    addonPrice += 100000;
+                    selectedAddons.push('Sopir');
                 }
-            });
+                if (document.getElementById('modal-cb-bbm').checked) {
+                    addonPrice += 100000;
+                    selectedAddons.push('BBM');
+                }
+            }
 
-            const totalPrice = (basePricePerDay + addonPricePerDay) * days;
-            document.getElementById(totalSpanId).textContent = formatRupiah(totalPrice);
+            const totalPrice = (activeBooking.basePrice + addonPrice) * days;
+            document.getElementById('modal-duration-label').textContent = `Total Estimasi (${days} Hari)`;
+            document.getElementById('modal-total-price').textContent = formatRupiah(totalPrice);
 
-            // Update Link WhatsApp
-            const startDate = document.getElementById('start-date').value;
-            const endDate = document.getElementById('end-date').value;
+            const start = document.getElementById('modal-start-date').value;
+            const end = document.getElementById('modal-end-date').value;
             const addonsText = selectedAddons.length > 0 ? ` dengan opsi: ${selectedAddons.join(' & ')}` : '';
             
-            const message = `Halo DriveEase, saya ingin memesan ${vehicleName} untuk tanggal ${startDate} sampai ${endDate} (${days} Hari)${addonsText}. Estimasi total biaya: ${formatRupiah(totalPrice)}`;
+            let message = '';
+            if (activeBooking.isR2R) {
+                message = `Halo DriveEase, apakah unit ${activeBooking.name} (atau sejenisnya) ready untuk tanggal ${start} sampai ${end} (${days} Hari)${addonsText}? Estimasi total biaya: ${formatRupiah(totalPrice)}`;
+            } else {
+                message = `Halo DriveEase, saya ingin memesan ${activeBooking.name} untuk tanggal ${start} sampai ${end} (${days} Hari)${addonsText}. Estimasi total biaya: ${formatRupiah(totalPrice)}`;
+            }
+            
             const waHref = `https://wa.me/6285100000000?text=${encodeURIComponent(message)}`;
+            const btn = document.getElementById('modal-wa-btn');
+            btn.setAttribute('href', waHref);
             
-            document.getElementById(waLinkId).setAttribute('href', waHref);
-        }
-
-        function updateEstimates() {
-            const days = getDurationDays();
-            
-            // Update Text Label Durasi
-            document.querySelectorAll('.vehicle-price div div:first-child').forEach(el => {
-                el.textContent = `Total Estimasi (${days} Hari)`;
-            });
-
-            // Trigger hitung ulang
-            document.querySelectorAll('.vehicle-card').forEach(card => {
-                const cb = card.querySelector('.addon-cb');
-                if (cb) {
-                    cb.dispatchEvent(new Event('change'));
-                }
-            });
-
-            // Update Beat (motor tanpa addon)
-            const beatPrice = 80000 * days;
-            document.getElementById('total-beat').textContent = formatRupiah(beatPrice);
-            const messageBeat = `Halo DriveEase, saya ingin memesan Honda Beat untuk tanggal ${document.getElementById('start-date').value} sampai ${document.getElementById('end-date').value} (${days} Hari). Estimasi total biaya: ${formatRupiah(beatPrice)}`;
-            document.getElementById('wa-beat').setAttribute('href', `https://wa.me/6285100000000?text=${encodeURIComponent(messageBeat)}`);
-        }
-
-        // Jalankan kalkulasi pertama kali
-        window.onload = function() {
-            updateEstimates();
+            if (activeBooking.isR2R) {
+                btn.className = 'wa-btn alternate';
+                btn.textContent = '🟡 Tanya CS via WA';
+            } else {
+                btn.className = 'wa-btn';
+                btn.textContent = '🟢 Pesan via WA';
+            }
         }
     </script>
 </body>

@@ -8,9 +8,10 @@ DriveEase adalah aplikasi manajemen rental mobil dan motor berbasis **Web Applic
 
 ### 1. 🌐 Tampilan Customer (Public Web/App)
 Halaman ini bersifat publik sehingga calon penyewa bisa melihat armada yang tersedia tanpa perlu masuk (login) ke sistem.
-* **Dua Halaman Utama:**
+* **Halaman Utama:**
   * **Halaman Mobil:** Menampilkan daftar katalog mobil lengkap dengan foto, spesifikasi singkat, dan harga sewa harian.
   * **Halaman Motor:** Menampilkan daftar katalog motor lengkap dengan foto, kapasitas mesin (cc), dan harga sewa harian.
+  * **Halaman Layanan Lain (Info Statis):** Informasi tambahan untuk customer mengenai layanan sampingan seperti **Cuci Mobil** dan **Inap Mobil** (berupa info tarif/kontak, belum masuk ke sistem transaksi utama).
 * **Fitur Cek Ketersediaan Real-Time:**
   * Customer dapat memasukkan **Tanggal Mulai** dan **Tanggal Selesai** sewa.
   * Sistem akan langsung menyaring dan menampilkan kendaraan mana saja yang **Ready (Tersedia)** untuk disewa pada rentang tanggal tersebut beserta total harganya.
