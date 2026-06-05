@@ -134,13 +134,13 @@ Untuk memastikan aplikasi tidak terlihat seperti template standar buatan generat
    * Emojis (`🚗`, `🛵`, `🧼`, `🧼`) digantikan dengan **custom SVG Vector Icons** yang tajam, minimalis, dan profesional.
 2. **Skema Warna Kustom & Gradasi Halus**:
    * Menghindari warna bawaan Tailwind/standar (seperti murni merah/biru/hijau).
-   * Menggunakan palet gelap premium: background berbasis *Midnight Blue/Deep Slate* (`#0a0f1d`), kartu semi-transparan dengan border tipis (*glassmorphism*), serta warna aksen yang dikurasi (seperti *Emerald Teal* untuk tombol sukses, dan *Vibrant Indigo* untuk tombol utama).
+   * Menggunakan **Tema Cerah Premium (Light Theme)**: Latar belakang bersih berbasis *Light Slate/Gray* (`#f8fafc`), kartu putih bersih (`#ffffff`) dengan bayangan halus (*box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05)*), serta warna aksen yang kontras dan dikurasi (seperti *Emerald Teal* untuk tombol sukses/pesan, dan *Vibrant Indigo* untuk tombol utama). Hal ini menjamin keterbacaan 100% di luar ruangan (*outdoor*) di bawah sinar matahari.
 3. **Efek Interaktif & Micro-Animations**:
    * Kartu kendaraan harus memiliki transisi halus (`transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1)`).
-   * Ketika kartu di-hover oleh kursor, ia akan sedikit terangkat (*elevated*) dan memancarkan efek cahaya border (*border-glow*).
+   * Ketika kartu di-hover oleh kursor, ia akan sedikit terangkat (*elevated*) dan memancarkan efek bayangan lembut yang lebih tebal.
 4. **Desain Komponen Form & Modal yang Elegan**:
-   * Input teks tidak menggunakan border default browser. Menggunakan border gelap halus yang menyala terang saat diklik (*focus state*).
-   * Modal menggunakan efek latar belakang buram (*backdrop-filter: blur(8px)*) agar menyatu secara estetis dengan halaman di belakangnya.
+   * Input teks menggunakan border abu-abu terang yang halus, menyala biru indigo saat diklik (*focus state*).
+   * Modal menggunakan efek latar belakang semi-transparan buram (*backdrop-filter: blur(8px)*) agar menyatu secara estetis dengan halaman di belakangnya.
 
 ---
 
