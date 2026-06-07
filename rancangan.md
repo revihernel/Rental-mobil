@@ -1,6 +1,6 @@
 # 🚗 DriveEase - Aplikasi Manajemen Rental Mobil & Motor
 
-DriveEase adalah aplikasi manajemen rental mobil dan motor berbasis **Web Application** yang dideploy langsung ke **Firebase Hosting** (`websiterental.web.app`). Aplikasi ini dirancang dengan pendekatan **Mobile-First** (dioptimalkan sepenuhnya untuk kenyamanan layar handphone/tablet, namun tetap responsif dan rapi saat dibuka di browser komputer/laptop).
+DriveEase adalah aplikasi manajemen rental mobil dan motor berbasis **Web Application** yang menggunakan **Next.js** untuk Frontend dan **Golang** untuk Backend API. Aplikasi ini dirancang dengan pendekatan **Mobile-First** (dioptimalkan sepenuhnya untuk kenyamanan layar handphone/tablet, namun tetap responsif dan rapi saat dibuka di browser komputer/laptop).
 
 ---
 
@@ -60,14 +60,14 @@ Digunakan oleh tim operasional untuk mengelola bisnis sehari-hari dengan antarmu
 
 Untuk membedakan hak akses antara halaman Customer (umum) dan Admin (operasional), aplikasi menggunakan mekanisme berikut:
 
-1. **Pemisahan URL/Rute (Routing Guard):**
+1. **Pemisahan URL/Rute (Next.js Middleware & Router Guard):**
    * **Rute Publik:** `/` (Home), `/mobil`, dan `/motor` dapat diakses langsung oleh siapapun.
-   * **Rute Privat:** `/admin/*` (Dashboard, Kelola Armada, Kalender) diproteksi oleh kode aplikasi (*Router Guard*). Jika ada pengguna yang belum login mencoba mengakses halaman ini, sistem akan otomatis mengalihkan mereka ke halaman `/login`.
-2. **Firebase Authentication:**
-   * Login ke halaman Admin menggunakan email dan password yang terdaftar secara aman di database Firebase Auth.
-3. **Aturan Keamanan Database (Firestore Security Rules):**
-   * **Pengguna Umum (Customer):** Hanya diizinkan untuk membaca data (`read` only) katalog mobil dan motor yang aktif. Tidak diizinkan menambah atau mengubah data apa pun.
-   * **Pengguna Terautentikasi (Admin):** Memiliki izin penuh untuk membuat, membaca, mengedit, dan menghapus data (`read`, `create`, `update`, `delete`) di semua tabel database (Armada, Booking, Laporan Keuangan, Blacklist).
+   * **Rute Privat:** `/admin/*` (Dashboard, Kelola Armada, Kalender) diproteksi di sisi Next.js menggunakan Middleware/Router Guard. Jika ada pengguna yang belum terautentikasi mencoba mengakses halaman ini, mereka akan dialihkan ke `/login`.
+2. **Autentikasi & Otorisasi API (Golang Backend):**
+   * Autentikasi Admin menggunakan token berbasis **JWT (JSON Web Token)** yang diterbitkan oleh backend Golang setelah verifikasi kredensial (email & password terenkripsi) di database.
+3. **Otorisasi Endpoint API:**
+   * **Pengguna Umum (Customer):** Hanya dapat mengakses endpoint publik (misal: `GET /api/vehicles`) untuk melihat katalog yang aktif.
+   * **Pengguna Terautentikasi (Admin):** Wajib menyertakan JWT valid di header HTTP (`Authorization: Bearer <token>`) untuk mengakses endpoint administratif (`POST`, `PUT`, `DELETE` pada `/api/admin/*`).
 
 ---
 
@@ -85,12 +85,12 @@ Mengikuti strategi bisnis di mana *"tidak ada kata penuh bagi pelanggan"*, siste
 
 ---
 
-## 🌐 Database & Penyimpanan Online (Firebase)
+## 🗄️ Arsitektur Data & Penyimpanan
 
-Aplikasi ini terhubung langsung dengan **Google Firebase** untuk penyimpanan data secara cloud/online:
-* **Firebase Hosting:** Untuk menghosting aplikasi web agar dapat diakses publik melalui domain aman `websiterental.web.app` (menggunakan CDN berkecepatan tinggi dan SSL/HTTPS otomatis).
-* **Firestore Database (Real-time):** Ketika Admin mencatat sewa kendaraan baru, dashboard admin lainnya dan status ketersediaan di sisi customer akan langsung diperbarui secara instan.
-* **Penyimpanan Berkas (Cloud Storage):** Foto kendaraan dan dokumen KTP penyewa disimpan dalam penyimpanan awan milik Firebase.
+Aplikasi menggunakan arsitektur terpisah antara Database Relasional (dikelola oleh Golang) dan Storage:
+* **Database Relasional (PostgreSQL / MySQL):** Digunakan untuk menyimpan data relasional seperti data armada, transaksi booking, laporan keuangan, dan akun admin dengan integritas data yang ketat.
+* **Penyimpanan Berkas (Object Storage / Cloud Storage):** Foto kendaraan dan dokumen kelengkapan penyewa disimpan di layanan Object Storage (seperti AWS S3, Google Cloud Storage, atau MinIO) dengan URL yang disimpan di database.
+* **API Gateway / Core Backend (Golang):** Menyediakan RESTful API berkinerja tinggi untuk melayani request dari frontend Next.js dan melakukan operasi CRUD ke database.
 
 ---
 
@@ -98,22 +98,27 @@ Aplikasi ini terhubung langsung dengan **Google Firebase** untuk penyimpanan dat
 
 Berdasarkan keputusan desain, sistem dibangun dengan arsitektur berikut:
 
-1. **Frontend Framework**: **React.js** dengan bundler **Vite**.
-2. **Styling**: **Vanilla CSS** modern (menggunakan CSS Variables, Flexbox/Grid, dan transisi halus).
-3. **Backend/Database**: **Firebase** (Firestore Database, Firebase Auth, Cloud Storage).
+1. **Frontend Framework**: **Next.js** (React Framework) dengan App Router untuk server-side rendering (SSR), static site generation (SSG) ketersediaan armada, dan routing yang dinamis.
+2. **Styling**: **Vanilla CSS** modern (menggunakan CSS Variables, Flexbox/Grid, dan transisi halus) atau modul CSS bawaan Next.js.
+3. **Backend API**: **Golang** (menggunakan framework seperti Gin, Fiber, atau Echo) untuk performa tinggi, konkurensi efisien, dan konsumsi memori rendah.
+4. **Database & ORM**: **PostgreSQL / MySQL** dengan ORM seperti **GORM** atau query builder seperti **sqlc** untuk interaksi database yang aman dan efisien.
 
-### 🛡️ Aturan Keamanan Database (Firestore Security Rules)
-* **Katalog Kendaraan (`/vehicles`)**: Dapat dibaca oleh publik tanpa autentikasi, namun hanya bisa dimodifikasi oleh admin.
-  ```javascript
-  match /vehicles/{vehicleId} {
-    allow read: if true;
-    allow write: if request.auth != null;
-  }
-  ```
-* **Data Transaksi & Booking (`/bookings`)**: Hanya boleh dibaca dan ditulis oleh admin yang terautentikasi.
-  ```javascript
-  match /bookings/{bookingId} {
-    allow read, write: if request.auth != null;
+### 🔌 Kontrak & Keamanan Endpoint API (Golang)
+* **Katalog Kendaraan (`GET /api/vehicles`)**: Dapat diakses secara publik tanpa token untuk menampilkan unit yang aktif.
+* **Manajemen Data (`/api/admin/*`)**: Melindungi operasi CRUD (Create, Update, Delete) menggunakan middleware autentikasi JWT di sisi backend Golang:
+  ```go
+  // Contoh middleware autentikasi di Golang
+  func AuthMiddleware() gin.HandlerFunc {
+      return func(c *gin.Context) {
+          tokenString := c.GetHeader("Authorization")
+          // Validasi JWT token...
+          if !isValid {
+              c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+              c.Abort()
+              return
+          }
+          c.Next()
+      }
   }
   ```
 
@@ -144,18 +149,24 @@ Untuk memastikan aplikasi tidak terlihat seperti template standar buatan generat
 
 ---
 
-## 🚀 Pengembangan & Deployment ke Firebase
+## 🚀 Pengembangan & Deployment
 
-Setelah kode aplikasi siap, berikut cara menjalankan dan mendeploy aplikasi ke internet:
+Berikut cara menjalankan dan mendeploy aplikasi secara lokal maupun production:
 
-1. **Menjalankan di Komputer Lokal (Development):**
-   * Pastikan Node.js terinstal.
-   * Jalankan `npm install` untuk memasang dependensi.
-   * Jalankan server lokal: `npm run dev`
-   * Buka browser di alamat lokal yang disediakan (misal: `http://localhost:5173`).
+### 1. Backend (Golang)
+* **Menjalankan di Komputer Lokal:**
+  * Pastikan Golang telah terinstal (versi terbaru disarankan).
+  * Salin file konfigurasi lingkungan (misalnya `.env`).
+  * Jalankan perintah: `go run main.go` atau `air` (untuk hot reload).
+  * Server backend akan berjalan di port default (misal: `http://localhost:8080`).
+* **Deployment Backend:**
+  * Dikemas menggunakan **Docker** (Dockerfile) dan dideploy ke VPS, platform cloud (seperti AWS ECS, GCP Cloud Run, atau DigitalOcean).
 
-2. **Mendeploy ke Firebase Hosting (Production):**
-   * Lakukan build produksi: `npm run build`
-   * Lakukan deployment menggunakan Firebase CLI:
-     `firebase deploy --only hosting`
-   * Aplikasi akan langsung ter-update di internet pada domain `websiterental.web.app`.
+### 2. Frontend (Next.js)
+* **Menjalankan di Komputer Lokal:**
+  * Pastikan Node.js terinstal.
+  * Jalankan `npm install` untuk memasang dependensi.
+  * Jalankan server lokal: `npm run dev`
+  * Buka browser di `http://localhost:3000`.
+* **Deployment Frontend:**
+  * Dapat dideploy secara optimal ke **Vercel** atau di-build secara mandiri (`npm run build` dan `npm run start`) menggunakan Docker untuk dijalankan di server VPS.
